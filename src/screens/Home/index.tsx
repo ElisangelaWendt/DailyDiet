@@ -11,7 +11,8 @@ interface MealProps{
   description: string,
   date: string,
   hour: string,
-  diet: string
+  diet: string,
+  id: number
 }
 
 export default function Home({navigation}: any) {
@@ -27,6 +28,7 @@ export default function Home({navigation}: any) {
       setIsLoading(true)
       const data = await MealGetAll()
       setMeals(data)
+      // console.log(data[data.length -1]) //pegar o ultimo item salvo da lista
     }catch(error){
       console.log(error)
       Alert.alert('Refeições', 'Não foi possível carregar as refeições')
@@ -39,8 +41,9 @@ export default function Home({navigation}: any) {
     navigation.navigate('NewMeal')
   }
 
-  function handleGoToMeal(meal: string, date: string){
-    navigation.navigate("Meal", {meal, date})
+  function handleGoToMeal(id: number){
+    console.log(id)
+    navigation.navigate("Meal", {id})
   }
 
   return (
@@ -57,7 +60,7 @@ export default function Home({navigation}: any) {
       <Button text="+ Nova refeição" onPress={handleNewMeal} edit={false}/>
       <FlatList
       data={meals}
-      renderItem={({item}) => <Meal hour={item.hour} name={item.name} onPress={() => handleGoToMeal(item.name, item.date)}/>}
+      renderItem={({item}) => <Meal hour={item.hour} name={item.name} onPress={() => handleGoToMeal(item.id)}/>}
       keyExtractor={item => item.hour}
       />
     </Container>

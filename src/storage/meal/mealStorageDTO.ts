@@ -1,7 +1,8 @@
 export type MealStorageDTO = {
-  meal: string,
+  name: string,
   description: string,
   date: string,
   hour: string,
-  diet: string
+  diet: boolean,
+  id: number
 }

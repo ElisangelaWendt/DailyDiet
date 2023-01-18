@@ -4,42 +4,44 @@ import { ButtonText, Container, Description, ExclusionButton, Status, Subtitle, 
 import { Feather } from "@expo/vector-icons";
 import { Alert } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
-import { MealGetByNameAndDate } from "../../storage/meal/mealGetByNameAndDate";
-import { useState } from "react";
+import { MealGetById } from "../../storage/meal/mealGetById";
+import { useEffect, useState } from "react";
 import { MealStorageDTO } from "../../storage/meal/MealStorageDTO";
+import { DeleteAll } from "../../storage/meal/mealDeleteAll";
 
-interface RouteParams{
-  meal: string,
-  date: string
+interface RouteParams {
+  id: number,
 }
 
-
-export default function Meal({navigation}:any){
+export default function Meal({ navigation }: any) {
   const route = useRoute()
   const params = route.params as RouteParams
   const [meal, setMeal] = useState<MealStorageDTO[]>([])
+  const [ isLoading, setIsLoading] = useState(true)
 
   useFocusEffect(() => {
     fetchMealsByNameAndDate()
-    console.log(meal)
   })
 
   async function fetchMealsByNameAndDate() {
     try {
-      const Meal = await MealGetByNameAndDate(params.meal, params.date)
+      setIsLoading(true)
+      const Meal = await MealGetById(params.id)
       setMeal(Meal)
+      // console.log(meal)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       Alert.alert('Refeição', 'Não foi possivel carregar a refeição')
     } finally {
+      setIsLoading(false)
     }
   }
 
-  function handleNavigateToEdit(){
+  function handleNavigateToEdit() {
     navigation.navigate("EditMeal")
   }
 
-  function Delete(){
+  function Delete() {
     Alert.alert('Remover', 'Deseja excluir a refeição?', [
       { text: 'Não', style: 'cancel' },
       { text: 'Sim', onPress: () => DeleteMeal() }
@@ -47,26 +49,42 @@ export default function Meal({navigation}:any){
     )
   }
 
-  function DeleteMeal(){
+  function DeleteMeal() {
     //deletar refeição
+    // DeleteAll()
   }
 
-  return(
+  return (
     <>
-    <Header canGoBack title="Refeição"/>
-        <Container>
-      <Title>Nome</Title>
-      <Description>Descrição</Description>
-      <Subtitle>Data e Hora</Subtitle>
-      <Description>12/08/2022 às 16:00</Description>
-      <Status><Feather name="circle" style={{marginRight:5}} color={"green"} /> 
-      <Description>Dentro da dieta</Description>
-      </Status>
-    </Container>
-      <Button edit onPress={handleNavigateToEdit} text="Editar refeição" style={{margin:24, borderRadius:6}} />
+    {meal.length>0 &&
+    <>
+      <Header canGoBack title="Refeição" />
+      <Container>
+            <Title>
+              {meal[0].name}
+            </Title>
+          <Description>{meal[0].description}</Description>
+          <Subtitle>Data e Hora</Subtitle>
+          <Description>{meal[0].date} às {meal[0].hour}</Description>
+          {meal[0].diet ? 
+          <Status><Feather name="circle" style={{ marginRight: 5 }} color={"green"} />
+            <Description>Dentro da dieta</Description>
+          </Status>
+          :
+          <Status><Feather name="circle" style={{ marginRight: 5 }} color={"red"} />
+            <Description>Fora da dieta</Description>
+          </Status>
+
+          }
+
+      </Container>
+      <Button edit onPress={handleNavigateToEdit} text="Editar refeição" style={{ margin: 24, borderRadius: 6 }} />
       <ExclusionButton onPress={Delete}>
-      <ButtonText><Feather name="trash-2" size={20} style={{marginRight: 5}} /> Excluir Refeição</ButtonText>
-    </ExclusionButton>
+        <ButtonText><Feather name="trash-2" size={20} style={{ marginRight: 5 }} /> Excluir Refeição</ButtonText>
+      </ExclusionButton>
     </>
+    }
+    </>
+
   )
 }

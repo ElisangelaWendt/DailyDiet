@@ -5,10 +5,20 @@ import Button from "../../components/Button";
 import DietButton from "../../components/DietButton";
 import Header from "../../components/Header";
 import Input from "../../components/Input";
-import { GroupCreate } from "../../storage/meal/mealCreate";
+import { MealCreate } from "../../storage/meal/mealCreate";
+import { MealGetAll } from "../../storage/meal/mealGetAll";
 import { Content, InputTitle, Row, Title, Warning } from "./styles";
 
 export var Positive = true;
+
+interface MealProps{
+  name: string,
+  description: string,
+  date: string,
+  hour: string,
+  diet: boolean,
+  id: number
+}
 
 export default function NewMeal({ navigation }: any) {
   const [isActiveYes, setIsActiveYes] = useState(false)
@@ -19,6 +29,8 @@ export default function NewMeal({ navigation }: any) {
   const [hour, setHour] = useState('')
   const [empty, setEmpty] = useState(false)
   const [diet, setDiet] = useState(true)
+  var id = 0;
+  // const [lastMeal, setLastMeal] = useState<MealProps>()
   // const datetimeField = useRef();
   // const isValid = datetimeField.isValid()
 
@@ -35,20 +47,37 @@ export default function NewMeal({ navigation }: any) {
     setDiet(false)
   }
 
-  function handleRegister() {
-    // navigation.navigate("Feedback")
-    if (name === '' || date === '' || hour === '' || description === '') {
+  async function handleRegister() {
+    if ((name && date && hour && description) === '') {
       setEmpty(true)
     } else {
       setEmpty(false)
+      console.log(id)
+
+      try{
+        const data = await MealGetAll()
+        if(data.length > 0){
+          var lastMeal: MealProps = (data[data.length -1])
+          id = lastMeal.id +1
+        }else{
+          id = 1
+        }
+        
+      }catch(error){
+        console.log(error)
+      }
+      if(id != 0){
       const meal = {
+        id: id,
         name: name,
         description: description,
         date: date,
         hour: hour,
         diet: diet
       }
-      GroupCreate(meal)
+      MealCreate(meal)
+    navigation.navigate("Feedback")
+    }
     }
   }
 
