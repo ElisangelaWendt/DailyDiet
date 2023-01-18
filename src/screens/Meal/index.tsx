@@ -29,17 +29,16 @@ export default function Meal({ navigation }: any) {
       setIsLoading(true)
       const Meal = await MealGetById(params.id)
       setMeal(Meal)
-      // console.log(meal)
     } catch (error) {
-      // console.log(error)
+      console.log(error)
       Alert.alert('Refeição', 'Não foi possivel carregar a refeição')
     } finally {
       setIsLoading(false)
     }
   }
 
-  function handleNavigateToEdit() {
-    navigation.navigate("EditMeal")
+  function handleNavigateToEdit(id: number) {
+    navigation.navigate("EditMeal", {id})
   }
 
   function Delete() {
@@ -81,7 +80,7 @@ export default function Meal({ navigation }: any) {
           }
 
       </Container>
-      <Button edit onPress={handleNavigateToEdit} text="Editar refeição" style={{ margin: 24, borderRadius: 6 }} />
+      <Button edit onPress={() => handleNavigateToEdit(meal[0].id)} text="Editar refeição" style={{ margin: 24, borderRadius: 6 }} />
       <ExclusionButton onPress={Delete}>
         <ButtonText><Feather name="trash-2" size={20} style={{ marginRight: 5 }} /> Excluir Refeição</ButtonText>
       </ExclusionButton>
