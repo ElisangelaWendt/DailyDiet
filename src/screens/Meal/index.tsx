@@ -8,6 +8,7 @@ import { MealGetById } from "../../storage/meal/mealGetById";
 import { useEffect, useState } from "react";
 import { MealStorageDTO } from "../../storage/meal/MealStorageDTO";
 import { DeleteAll } from "../../storage/meal/mealDeleteAll";
+import { MealRemoveById } from "../../storage/meal/mealRemoveById";
 
 interface RouteParams {
   id: number,
@@ -52,6 +53,8 @@ export default function Meal({ navigation }: any) {
   function DeleteMeal() {
     //deletar refeição
     // DeleteAll()
+    MealRemoveById(params.id)
+    navigation.navigate("Home")
   }
 
   return (
