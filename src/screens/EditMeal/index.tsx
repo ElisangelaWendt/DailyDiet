@@ -6,6 +6,7 @@ import Button from "../../components/Button";
 import DietButton from "../../components/DietButton";
 import Header from "../../components/Header";
 import Input from "../../components/Input";
+import { MealEdit } from "../../storage/meal/mealEdit";
 import { MealGetById } from "../../storage/meal/mealGetById";
 import { MealStorageDTO } from "../../storage/meal/MealStorageDTO";
 import { InputTitle } from "../NewMeal/styles";
@@ -15,7 +16,7 @@ interface RouteParams {
   id: number,
 }
 
-export default function EditMeal() {
+export default function EditMeal({navigation}: any) {
   const [isActiveYes, setIsActiveYes] = useState(false)
   const [isActiveNo, setIsActiveNo] = useState(false)
   const route = useRoute()
@@ -25,24 +26,28 @@ export default function EditMeal() {
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
   const [ hour, setHour] = useState('')
-  var contagem=0;
+  const [ diet, setDiet] = useState(true)
+  const [contagem, setContagem ]= useState(0);
 
   function handleSetIsActiveYes() {
     setIsActiveYes(true)
     setIsActiveNo(false)
+    setDiet(true)
   }
   function handleSetIsActiveNo() {
     setIsActiveYes(false)
     setIsActiveNo(true)
+    setDiet(false)
   }
   useFocusEffect(() => {
     fetchMealsByNameAndDate()
-    if(contagem != 0){
+    if(contagem === 0){
       if(meal.length > 0){
         setName(meal[0].name)
         setDescription(meal[0].description)
         setDate(meal[0].date)
         setHour(meal[0].hour)
+        setDiet(meal[0].diet)
         if(meal[0].diet){
           setIsActiveYes(true)
           setIsActiveNo(false)
@@ -50,7 +55,7 @@ export default function EditMeal() {
           setIsActiveYes(false)
           setIsActiveNo(true)
         }
-        contagem = 1;
+        setContagem(1)
       }
     }
   })
@@ -66,7 +71,9 @@ export default function EditMeal() {
   }
 
   function handleSave() {
-
+    console.log(MealEdit(params.id, name, date, hour, description, diet))
+    MealEdit(params.id, name, date, hour, description, diet)
+    navigation.navigate("Home")
   }
 
   return (
